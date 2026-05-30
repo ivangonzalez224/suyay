@@ -21,3 +21,9 @@ export interface Scene {
   duration: number;
   caption: string;
 }
+
+export interface StoryboardData {
+  summary: string;
+  script: string;
+  scenes: Scene[];
+}

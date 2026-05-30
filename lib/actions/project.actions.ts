@@ -3,6 +3,7 @@
 import { requireUserId } from "@/lib/auth/helpers";
 import { ProjectService } from "@/lib/services/project.service";
 import { createProjectSchema } from "@/lib/validations/project.schema";
+import type { StoryboardData } from "@/types";
 
 export interface ProjectActionResult {
   success: boolean;
@@ -185,5 +186,36 @@ export async function savePdfContentAction(
       return { success: false, error: error.message };
     }
     return { success: false, error: "Error al procesar el PDF" };
+  }
+}
+
+export interface StoryboardActionResult {
+  success: boolean;
+  error?: string;
+  data?: StoryboardData;
+}
+
+export async function generateStoryboardAction(
+  projectId: string
+): Promise<StoryboardActionResult> {
+  const userId = await requireUserId();
+
+  // Verificar que el proyecto pertenece al usuario
+  try {
+    await ProjectService.getProjectById(projectId, userId);
+  } catch {
+    return { success: false, error: "Proyecto no encontrado" };
+  }
+
+  try {
+    const { StoryboardService } =
+      await import("@/lib/services/storyboard.service");
+    const data = await StoryboardService.generateAndSave(projectId);
+    return { success: true, data };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al generar el storyboard" };
   }
 }
