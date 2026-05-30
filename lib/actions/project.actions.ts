@@ -58,3 +58,132 @@ export async function deleteProjectAction(
     return { success: false, error: "Error al eliminar el proyecto" };
   }
 }
+
+export interface ContentActionResult {
+  success: boolean;
+  error?: string;
+}
+
+export async function saveTextContentAction(
+  projectId: string,
+  formData: FormData
+): Promise<ContentActionResult> {
+  const userId = await requireUserId();
+
+  const inputText = formData.get("inputText") as string;
+
+  if (!inputText || inputText.trim().length < 50) {
+    return {
+      success: false,
+      error: "El texto debe tener al menos 50 caracteres",
+    };
+  }
+
+  try {
+    await ProjectService.updateProject(projectId, userId, {
+      inputType: "TEXT",
+      inputText: inputText.trim(),
+      status: "DRAFT",
+    });
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al guardar el contenido" };
+  }
+}
+
+export async function saveUrlContentAction(
+  projectId: string,
+  formData: FormData
+): Promise<ContentActionResult> {
+  const userId = await requireUserId();
+
+  const inputUrl = formData.get("inputUrl") as string;
+
+  if (!inputUrl) {
+    return { success: false, error: "La URL es requerida" };
+  }
+
+  try {
+    const { extractTextFromUrl } = await import("@/lib/utils/url");
+    const extractedText = await extractTextFromUrl(inputUrl);
+
+    await ProjectService.updateProject(projectId, userId, {
+      inputType: "URL",
+      inputUrl,
+      inputText: extractedText,
+      status: "DRAFT",
+    });
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al procesar la URL" };
+  }
+}
+
+export async function savePdfContentAction(
+  projectId: string,
+  formData: FormData
+): Promise<ContentActionResult> {
+  const userId = await requireUserId();
+
+  const file = formData.get("pdf") as File | null;
+
+  if (!file || file.size === 0) {
+    return { success: false, error: "Selecciona un archivo PDF" };
+  }
+
+  if (file.type !== "application/pdf") {
+    return { success: false, error: "El archivo debe ser un PDF" };
+  }
+
+  const MAX_SIZE = 5 * 1024 * 1024;
+  if (file.size > MAX_SIZE) {
+    return { success: false, error: "El PDF no puede superar 5MB" };
+  }
+
+  try {
+    // Llamar al Route Handler para extraer texto
+    // (aísla pdfjs-dist del bundle del cliente)
+    const extractFormData = new FormData();
+    extractFormData.append("pdf", file);
+
+    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/extract-pdf`, {
+      method: "POST",
+      body: extractFormData,
+      headers: {
+        // Pasar la cookie de sesión para autenticación
+        cookie: (await (await import("next/headers")).cookies()).toString(),
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: data.error ?? "Error al procesar el PDF",
+      };
+    }
+
+    await ProjectService.updateProject(projectId, userId, {
+      inputType: "PDF",
+      inputText: data.text,
+      status: "DRAFT",
+    });
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al procesar el PDF" };
+  }
+}
