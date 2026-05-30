@@ -4,6 +4,7 @@ import { requireUserId } from "@/lib/auth/helpers";
 import { ProjectService } from "@/lib/services/project.service";
 import { createProjectSchema } from "@/lib/validations/project.schema";
 import type { StoryboardData } from "@/types";
+import type { Scene } from "@/types";
 
 export interface ProjectActionResult {
   success: boolean;
@@ -217,5 +218,35 @@ export async function generateStoryboardAction(
       return { success: false, error: error.message };
     }
     return { success: false, error: "Error al generar el storyboard" };
+  }
+}
+
+export interface SaveScenesResult {
+  success: boolean;
+  error?: string;
+}
+
+export async function saveScenesAction(
+  projectId: string,
+  scenes: Scene[]
+): Promise<SaveScenesResult> {
+  const userId = await requireUserId();
+
+  try {
+    await ProjectService.getProjectById(projectId, userId);
+  } catch {
+    return { success: false, error: "Proyecto no encontrado" };
+  }
+
+  try {
+    const { StoryboardService } =
+      await import("@/lib/services/storyboard.service");
+    await StoryboardService.updateScenes(projectId, scenes);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al guardar las escenas" };
   }
 }

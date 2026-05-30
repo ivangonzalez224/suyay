@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Sparkles, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, RefreshCw, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { generateStoryboardAction } from "@/lib/actions/project.actions";
@@ -38,11 +38,15 @@ export function GenerateStoryboardButton({
       return;
     }
 
-    // Redirigir al editor de storyboard (Paso 4)
     router.push(`/projects/${projectId}/storyboard`);
     router.refresh();
   };
 
+  const handleEdit = () => {
+    router.push(`/projects/${projectId}/storyboard`);
+  };
+
+  // Sin contenido todavía
   if (!hasContent) {
     return (
       <Card className="border-dashed">
@@ -60,9 +64,9 @@ export function GenerateStoryboardButton({
       <Card className="border-violet-500/20 bg-violet-500/5">
         <CardContent className="py-4">
           <p className="text-muted-foreground text-sm">
-            La IA analizará tu contenido y generará un <strong>resumen</strong>,{" "}
-            <strong>guion</strong> y <strong>escenas editables</strong>{" "}
-            adaptados a la plataforma y duración que elegiste.
+            {hasStoryboard
+              ? "Tu storyboard ya fue generado. Puedes editarlo o regenerarlo desde cero."
+              : "La IA analizará tu contenido y generará un resumen, guion y escenas editables adaptados a la plataforma y duración que elegiste."}
           </p>
         </CardContent>
       </Card>
@@ -73,29 +77,57 @@ export function GenerateStoryboardButton({
         </div>
       )}
 
-      <Button
-        onClick={handleGenerate}
-        disabled={isGenerating}
-        className="w-full"
-        size="lg"
-      >
-        {isGenerating ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Generando storyboard...
-          </>
-        ) : hasStoryboard ? (
-          <>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Regenerar storyboard
-          </>
+      <div className="flex gap-3">
+        {/* Botón principal: editar si existe, generar si no */}
+        {hasStoryboard ? (
+          <Button onClick={handleEdit} className="flex-1 gap-2" size="lg">
+            <Pencil className="h-4 w-4" />
+            Editar storyboard
+          </Button>
         ) : (
-          <>
-            <Sparkles className="mr-2 h-4 w-4" />
-            Generar storyboard con IA
-          </>
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating}
+            className="flex-1 gap-2"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generando storyboard...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generar storyboard con IA
+              </>
+            )}
+          </Button>
         )}
-      </Button>
+
+        {/* Botón secundario: regenerar (solo si ya existe) */}
+        {hasStoryboard && (
+          <Button
+            onClick={handleGenerate}
+            disabled={isGenerating}
+            variant="outline"
+            size="lg"
+            className="gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Regenerando...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4" />
+                Regenerar
+              </>
+            )}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
