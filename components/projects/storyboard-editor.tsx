@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { saveScenesAction } from "@/lib/actions/project.actions";
 import type { StoryboardData, Scene } from "@/types";
+import { Mic } from "lucide-react";
+import { generateVoiceAction } from "@/lib/actions/render.actions";
 
 interface StoryboardEditorProps {
   projectId: string;
@@ -23,6 +25,8 @@ export function StoryboardEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
+  const [voiceSuccess, setVoiceSuccess] = useState(false);
 
   // Calcular duración total
   const totalDuration = scenes.reduce((sum, s) => sum + s.duration, 0);
@@ -52,6 +56,25 @@ export function StoryboardEditor({
 
     setSavedAt(new Date());
     router.refresh();
+  };
+
+  const handleGenerateVoice = async () => {
+    // Primero guardar los cambios actuales
+    await handleSave();
+
+    setIsGeneratingVoice(true);
+    setVoiceSuccess(false);
+
+    const result = await generateVoiceAction(projectId);
+
+    setIsGeneratingVoice(false);
+
+    if (!result.success) {
+      setError(result.error ?? "Error al generar la voz");
+      return;
+    }
+
+    setVoiceSuccess(true);
   };
 
   return (
@@ -102,36 +125,72 @@ export function StoryboardEditor({
       )}
 
       {/* Footer fijo */}
-      <div className="bg-background sticky bottom-0 flex items-center justify-between gap-4 border-t pt-4 pb-2">
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          {savedAt && (
-            <>
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-green-600 dark:text-green-400">
-                Guardado a las{" "}
-                {savedAt.toLocaleTimeString("es-ES", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button onClick={handleSave} disabled={isSaving} className="gap-2">
-            {isSaving ? (
+      <div className="bg-background sticky bottom-0 space-y-3 border-t pt-4 pb-2">
+        {/* Estado de guardado */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-sm">
+            {savedAt && (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Guardando...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Guardar cambios
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span className="text-xs text-green-600 dark:text-green-400">
+                  Guardado a las{" "}
+                  {savedAt.toLocaleTimeString("es-ES", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </>
             )}
-          </Button>
+            {voiceSuccess && (
+              <>
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span className="text-xs text-green-600 dark:text-green-400">
+                  Voz generada correctamente
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Guardar */}
+            <Button
+              onClick={handleSave}
+              disabled={isSaving || isGeneratingVoice}
+              variant="outline"
+              className="gap-2"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Guardar
+                </>
+              )}
+            </Button>
+
+            {/* Generar voz */}
+            <Button
+              onClick={handleGenerateVoice}
+              disabled={isSaving || isGeneratingVoice}
+              className="gap-2"
+            >
+              {isGeneratingVoice ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generando voz...
+                </>
+              ) : (
+                <>
+                  <Mic className="h-4 w-4" />
+                  Generar voz
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

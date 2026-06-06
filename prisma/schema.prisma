@@ -96,6 +96,7 @@ model Project {
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   storyboard Storyboard?
   video      Video?
+  renderPath  String? 
 
   @@index([userId])
   @@index([status])
@@ -156,6 +157,8 @@ model Video {
   errorMessage String?     @db.Text
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+  voiceId     String?
+  renderPath  String?
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
