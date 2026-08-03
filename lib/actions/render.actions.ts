@@ -37,3 +37,32 @@ export async function generateVoiceAction(
     return { success: false, error: "Error al generar la voz" };
   }
 }
+
+export interface RenderVideoResult {
+  success: boolean;
+  error?: string;
+  videoUrl?: string;
+}
+
+export async function renderVideoAction(
+  projectId: string
+): Promise<RenderVideoResult> {
+  const userId = await requireUserId();
+
+  try {
+    await ProjectService.getProjectById(projectId, userId);
+  } catch {
+    return { success: false, error: "Proyecto no encontrado" };
+  }
+
+  try {
+    const { RenderService } = await import("@/lib/services/render.service");
+    const videoUrl = await RenderService.renderVideo(projectId);
+    return { success: true, videoUrl };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Error al renderizar el video" };
+  }
+}

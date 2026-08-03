@@ -2,14 +2,17 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Save, CheckCircle2, Clock } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Clock, Film } from "lucide-react";
 import { SceneCard } from "./scene-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { saveScenesAction } from "@/lib/actions/project.actions";
 import type { StoryboardData, Scene } from "@/types";
 import { Mic } from "lucide-react";
-import { generateVoiceAction } from "@/lib/actions/render.actions";
+import {
+  generateVoiceAction,
+  renderVideoAction,
+} from "@/lib/actions/render.actions";
 
 interface StoryboardEditorProps {
   projectId: string;
@@ -27,6 +30,8 @@ export function StoryboardEditor({
   const [error, setError] = useState<string | null>(null);
   const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
   const [voiceSuccess, setVoiceSuccess] = useState(false);
+  const [isRendering, setIsRendering] = useState(false);
+  const [renderUrl, setRenderUrl] = useState<string | null>(null);
 
   // Calcular duración total
   const totalDuration = scenes.reduce((sum, s) => sum + s.duration, 0);
@@ -75,6 +80,23 @@ export function StoryboardEditor({
     }
 
     setVoiceSuccess(true);
+  };
+
+  const handleRender = async () => {
+    setIsRendering(true);
+    setError(null);
+
+    const result = await renderVideoAction(projectId);
+
+    setIsRendering(false);
+
+    if (!result.success) {
+      setError(result.error ?? "Error al renderizar");
+      return;
+    }
+
+    setRenderUrl(result.videoUrl ?? null);
+    router.refresh();
   };
 
   return (
@@ -126,71 +148,98 @@ export function StoryboardEditor({
 
       {/* Footer fijo */}
       <div className="bg-background sticky bottom-0 space-y-3 border-t pt-4 pb-2">
-        {/* Estado de guardado */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm">
-            {savedAt && (
-              <>
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span className="text-xs text-green-600 dark:text-green-400">
-                  Guardado a las{" "}
-                  {savedAt.toLocaleTimeString("es-ES", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-              </>
-            )}
-            {voiceSuccess && (
-              <>
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                <span className="text-xs text-green-600 dark:text-green-400">
-                  Voz generada correctamente
-                </span>
-              </>
-            )}
-          </div>
+        {/* Mensajes de estado */}
+        <div className="flex min-h-5 items-center gap-2 text-xs">
+          {savedAt && !voiceSuccess && !renderUrl && (
+            <>
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <span className="text-green-600 dark:text-green-400">
+                Guardado a las{" "}
+                {savedAt.toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </>
+          )}
+          {voiceSuccess && !renderUrl && (
+            <>
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <span className="text-green-600 dark:text-green-400">
+                Voz generada — ahora puedes renderizar el video
+              </span>
+            </>
+          )}
+          {renderUrl && (
+            <>
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              <span className="text-green-600 dark:text-green-400">
+                Video listo —{" "}
+                <a
+                  href={renderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium underline"
+                >
+                  previsualizar
+                </a>
+              </span>
+            </>
+          )}
+        </div>
 
-          <div className="flex items-center gap-2">
-            {/* Guardar */}
-            <Button
-              onClick={handleSave}
-              disabled={isSaving || isGeneratingVoice}
-              variant="outline"
-              className="gap-2"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Guardar
-                </>
-              )}
-            </Button>
+        {/* Botones */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Guardar */}
+          <Button
+            onClick={handleSave}
+            disabled={isSaving || isGeneratingVoice || isRendering}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            {isSaving ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Save className="h-3.5 w-3.5" />
+            )}
+            Guardar
+          </Button>
 
-            {/* Generar voz */}
-            <Button
-              onClick={handleGenerateVoice}
-              disabled={isSaving || isGeneratingVoice}
-              className="gap-2"
-            >
-              {isGeneratingVoice ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generando voz...
-                </>
-              ) : (
-                <>
-                  <Mic className="h-4 w-4" />
-                  Generar voz
-                </>
-              )}
-            </Button>
-          </div>
+          {/* Generar voz */}
+          <Button
+            onClick={handleGenerateVoice}
+            disabled={isSaving || isGeneratingVoice || isRendering}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            {isGeneratingVoice ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Mic className="h-3.5 w-3.5" />
+            )}
+            {isGeneratingVoice ? "Generando voz..." : "Generar voz"}
+          </Button>
+
+          {/* Renderizar */}
+          <Button
+            onClick={handleRender}
+            disabled={isSaving || isGeneratingVoice || isRendering}
+            size="sm"
+            className="gap-2"
+          >
+            {isRendering ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Film className="h-3.5 w-3.5" />
+            )}
+            {isRendering
+              ? "Renderizando..."
+              : renderUrl
+                ? "Re-renderizar"
+                : "Renderizar video"}
+          </Button>
         </div>
       </div>
     </div>
