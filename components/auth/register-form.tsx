@@ -17,6 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+const darkInput =
+  "bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus-visible:ring-violet-500 focus-visible:border-violet-500";
+
 export function RegisterForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +49,6 @@ export function RegisterForm() {
       return;
     }
 
-    // Login automático después del registro
     await signIn("credentials", {
       email: data.email,
       password: data.password,
@@ -58,71 +60,91 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-sm space-y-6">
+    <div className="w-full space-y-7">
       {/* Header */}
-      <div className="space-y-1 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Crear cuenta</h1>
-        <p className="text-muted-foreground text-sm">
-          Empieza a crear videos con IA
-        </p>
+      <div className="space-y-1.5">
+        <h1 className="text-2xl font-bold tracking-tight text-white">
+          Crear cuenta
+        </h1>
+        <p className="text-sm text-zinc-500">Empieza a crear videos con IA</p>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="bg-destructive/10 border-destructive/20 rounded-md border px-4 py-3">
-            <p className="text-destructive text-sm">{serverError}</p>
+          <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
+            <p className="text-sm text-red-400">{serverError}</p>
           </div>
         )}
 
         {/* Nombre */}
-        <div className="space-y-2">
-          <Label htmlFor="name">Nombre</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="name" className="text-xs font-medium text-zinc-400">
+            Nombre
+          </Label>
           <Input
             id="name"
             type="text"
             placeholder="Tu nombre"
             autoComplete="name"
-            className={cn(errors.name && "border-destructive")}
+            className={cn(
+              darkInput,
+              errors.name && "border-red-500/50 focus-visible:border-red-500"
+            )}
             {...register("name")}
           />
           {errors.name && (
-            <p className="text-destructive text-xs">{errors.name.message}</p>
+            <p className="text-xs text-red-400">{errors.name.message}</p>
           )}
         </div>
 
         {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs font-medium text-zinc-400">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
             placeholder="tu@email.com"
             autoComplete="email"
-            className={cn(errors.email && "border-destructive")}
+            className={cn(
+              darkInput,
+              errors.email && "border-red-500/50 focus-visible:border-red-500"
+            )}
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-destructive text-xs">{errors.email.message}</p>
+            <p className="text-xs text-red-400">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
-        <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="password"
+            className="text-xs font-medium text-zinc-400"
+          >
+            Contraseña
+          </Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Mínimo 8 caracteres"
               autoComplete="new-password"
-              className={cn(errors.password && "border-destructive", "pr-10")}
+              className={cn(
+                darkInput,
+                "pr-10",
+                errors.password &&
+                  "border-red-500/50 focus-visible:border-red-500"
+              )}
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-600 transition-colors hover:text-zinc-400"
               aria-label={
                 showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
               }
@@ -135,31 +157,42 @@ export function RegisterForm() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-destructive text-xs">
-              {errors.password.message}
-            </p>
+            <p className="text-xs text-red-400">{errors.password.message}</p>
           )}
         </div>
 
         {/* Confirmar password */}
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+        <div className="space-y-1.5">
+          <Label
+            htmlFor="confirmPassword"
+            className="text-xs font-medium text-zinc-400"
+          >
+            Confirmar contraseña
+          </Label>
           <Input
             id="confirmPassword"
             type="password"
             placeholder="Repite tu contraseña"
             autoComplete="new-password"
-            className={cn(errors.confirmPassword && "border-destructive")}
+            className={cn(
+              darkInput,
+              errors.confirmPassword &&
+                "border-red-500/50 focus-visible:border-red-500"
+            )}
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-destructive text-xs">
+            <p className="text-xs text-red-400">
               {errors.confirmPassword.message}
             </p>
           )}
         </div>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="h-10 w-full bg-violet-600 text-white hover:bg-violet-500"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -171,16 +204,24 @@ export function RegisterForm() {
         </Button>
       </form>
 
-      {/* Link a login */}
-      <p className="text-muted-foreground text-center text-sm">
-        ¿Ya tienes cuenta?{" "}
-        <Link
-          href="/login"
-          className="text-foreground font-medium hover:underline"
-        >
-          Inicia sesión
-        </Link>
-      </p>
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-zinc-800" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-zinc-950 px-3 text-xs text-zinc-600">
+            ¿Ya tienes cuenta?
+          </span>
+        </div>
+      </div>
+
+      <Link
+        href="/login"
+        className="flex h-10 w-full items-center justify-center rounded-lg border border-zinc-800 text-sm font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
+      >
+        Iniciar sesión
+      </Link>
     </div>
   );
 }

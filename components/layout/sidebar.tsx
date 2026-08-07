@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/stores/app.store";
 import type { SessionUser } from "@/types";
+import Image from "next/image";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -35,21 +36,32 @@ export function Sidebar({ user }: SidebarProps) {
       className="bg-card/50 relative flex shrink-0 flex-col overflow-hidden border-r"
     >
       {/* Logo */}
-      <div className="flex h-16 shrink-0 items-center gap-3 border-b px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500">
-          <Zap className="h-4 w-4 text-white" />
-        </div>
+      <div className="flex h-16 shrink-0 items-center border-b px-4">
         <AnimatePresence>
-          {sidebarOpen && (
-            <motion.span
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.15 }}
-              className="text-lg font-bold tracking-tight whitespace-nowrap"
+          {sidebarOpen ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              Suyay
-            </motion.span>
+              <Image
+                src="/logo.png"
+                alt="Suyay"
+                width={100}
+                height={28}
+                className="object-contain"
+                priority
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500"
+            >
+              <Zap className="h-4 w-4 text-white" />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -5,6 +5,7 @@ import { VIDEO_GENERATION } from "@/lib/config/ai-models";
 fal.config({
   credentials: process.env.FAL_KEY,
 });
+console.warn("[FalService] FAL_KEY configured:", !!process.env.FAL_KEY);
 
 export interface GenerateVideoParams {
   prompt: string;
