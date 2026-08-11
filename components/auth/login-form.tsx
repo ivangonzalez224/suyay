@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +18,7 @@ const darkInput =
   "bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus-visible:ring-violet-500 focus-visible:border-violet-500";
 
 export function LoginForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -49,15 +51,13 @@ export function LoginForm() {
 
   return (
     <div className="w-full space-y-7">
-      {/* Header */}
       <div className="space-y-1.5">
         <h1 className="text-2xl font-bold tracking-tight text-white">
-          Bienvenido de nuevo
+          {t("loginTitle")}
         </h1>
-        <p className="text-sm text-zinc-500">Inicia sesión en tu cuenta</p>
+        <p className="text-sm text-zinc-500">{t("loginSubtitle")}</p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
@@ -65,20 +65,16 @@ export function LoginForm() {
           </div>
         )}
 
-        {/* Email */}
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-xs font-medium text-zinc-400">
-            Email
+            {t("email")}
           </Label>
           <Input
             id="email"
             type="email"
-            placeholder="tu@email.com"
+            placeholder={t("emailPlaceholder")}
             autoComplete="email"
-            className={cn(
-              darkInput,
-              errors.email && "border-red-500/50 focus-visible:border-red-500"
-            )}
+            className={cn(darkInput, errors.email && "border-red-500/50")}
             {...register("email")}
           />
           {errors.email && (
@@ -86,20 +82,19 @@ export function LoginForm() {
           )}
         </div>
 
-        {/* Password */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <Label
               htmlFor="password"
               className="text-xs font-medium text-zinc-400"
             >
-              Contraseña
+              {t("password")}
             </Label>
             <Link
               href="/forgot-password"
               className="text-xs text-zinc-600 transition-colors hover:text-zinc-400"
             >
-              ¿Olvidaste tu contraseña?
+              {t("forgotPassword")}
             </Link>
           </div>
           <div className="relative">
@@ -110,8 +105,7 @@ export function LoginForm() {
               className={cn(
                 darkInput,
                 "pr-10",
-                errors.password &&
-                  "border-red-500/50 focus-visible:border-red-500"
+                errors.password && "border-red-500/50"
               )}
               {...register("password")}
             />
@@ -119,9 +113,7 @@ export function LoginForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-600 transition-colors hover:text-zinc-400"
-              aria-label={
-                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-              }
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -143,22 +135,21 @@ export function LoginForm() {
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Iniciando sesión...
+              {t("signingIn")}
             </>
           ) : (
-            "Iniciar sesión"
+            t("signIn")
           )}
         </Button>
       </form>
 
-      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-zinc-800" />
         </div>
         <div className="relative flex justify-center">
           <span className="bg-zinc-950 px-3 text-xs text-zinc-600">
-            ¿No tienes cuenta?
+            {t("noAccount")}
           </span>
         </div>
       </div>
@@ -167,7 +158,7 @@ export function LoginForm() {
         href="/register"
         className="flex h-10 w-full items-center justify-center rounded-lg border border-zinc-800 text-sm font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
       >
-        Crear cuenta gratis
+        {t("registerLink")}
       </Link>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +22,7 @@ const darkInput =
   "bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus-visible:ring-violet-500 focus-visible:border-violet-500";
 
 export function RegisterForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -61,15 +63,13 @@ export function RegisterForm() {
 
   return (
     <div className="w-full space-y-7">
-      {/* Header */}
       <div className="space-y-1.5">
         <h1 className="text-2xl font-bold tracking-tight text-white">
-          Crear cuenta
+          {t("registerTitle")}
         </h1>
-        <p className="text-sm text-zinc-500">Empieza a crear videos con IA</p>
+        <p className="text-sm text-zinc-500">{t("registerSubtitle")}</p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
           <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3">
@@ -77,20 +77,16 @@ export function RegisterForm() {
           </div>
         )}
 
-        {/* Nombre */}
         <div className="space-y-1.5">
           <Label htmlFor="name" className="text-xs font-medium text-zinc-400">
-            Nombre
+            {t("name")}
           </Label>
           <Input
             id="name"
             type="text"
-            placeholder="Tu nombre"
+            placeholder={t("namePlaceholder")}
             autoComplete="name"
-            className={cn(
-              darkInput,
-              errors.name && "border-red-500/50 focus-visible:border-red-500"
-            )}
+            className={cn(darkInput, errors.name && "border-red-500/50")}
             {...register("name")}
           />
           {errors.name && (
@@ -98,20 +94,16 @@ export function RegisterForm() {
           )}
         </div>
 
-        {/* Email */}
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-xs font-medium text-zinc-400">
-            Email
+            {t("email")}
           </Label>
           <Input
             id="email"
             type="email"
-            placeholder="tu@email.com"
+            placeholder={t("emailPlaceholder")}
             autoComplete="email"
-            className={cn(
-              darkInput,
-              errors.email && "border-red-500/50 focus-visible:border-red-500"
-            )}
+            className={cn(darkInput, errors.email && "border-red-500/50")}
             {...register("email")}
           />
           {errors.email && (
@@ -119,25 +111,23 @@ export function RegisterForm() {
           )}
         </div>
 
-        {/* Password */}
         <div className="space-y-1.5">
           <Label
             htmlFor="password"
             className="text-xs font-medium text-zinc-400"
           >
-            Contraseña
+            {t("password")}
           </Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Mínimo 8 caracteres"
+              placeholder={t("passwordPlaceholder")}
               autoComplete="new-password"
               className={cn(
                 darkInput,
                 "pr-10",
-                errors.password &&
-                  "border-red-500/50 focus-visible:border-red-500"
+                errors.password && "border-red-500/50"
               )}
               {...register("password")}
             />
@@ -145,9 +135,7 @@ export function RegisterForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute top-1/2 right-3 -translate-y-1/2 text-zinc-600 transition-colors hover:text-zinc-400"
-              aria-label={
-                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-              }
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -161,23 +149,21 @@ export function RegisterForm() {
           )}
         </div>
 
-        {/* Confirmar password */}
         <div className="space-y-1.5">
           <Label
             htmlFor="confirmPassword"
             className="text-xs font-medium text-zinc-400"
           >
-            Confirmar contraseña
+            {t("confirmPassword")}
           </Label>
           <Input
             id="confirmPassword"
             type="password"
-            placeholder="Repite tu contraseña"
+            placeholder={t("confirmPasswordPlaceholder")}
             autoComplete="new-password"
             className={cn(
               darkInput,
-              errors.confirmPassword &&
-                "border-red-500/50 focus-visible:border-red-500"
+              errors.confirmPassword && "border-red-500/50"
             )}
             {...register("confirmPassword")}
           />
@@ -196,22 +182,21 @@ export function RegisterForm() {
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creando cuenta...
+              {t("creatingAccount")}
             </>
           ) : (
-            "Crear cuenta gratis"
+            t("createAccount")
           )}
         </Button>
       </form>
 
-      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-zinc-800" />
         </div>
         <div className="relative flex justify-center">
           <span className="bg-zinc-950 px-3 text-xs text-zinc-600">
-            ¿Ya tienes cuenta?
+            {t("hasAccount")}
           </span>
         </div>
       </div>
@@ -220,7 +205,7 @@ export function RegisterForm() {
         href="/login"
         className="flex h-10 w-full items-center justify-center rounded-lg border border-zinc-800 text-sm font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
       >
-        Iniciar sesión
+        {t("loginLink")}
       </Link>
     </div>
   );

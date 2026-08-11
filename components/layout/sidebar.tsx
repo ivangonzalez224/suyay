@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,19 +16,20 @@ import { useAppStore } from "@/stores/app.store";
 import type { SessionUser } from "@/types";
 import Image from "next/image";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/projects", label: "Proyectos", icon: FolderOpen },
-  { href: "/settings", label: "Configuración", icon: Settings },
-];
-
 interface SidebarProps {
   user: SessionUser;
 }
 
 export function Sidebar({ user }: SidebarProps) {
+  const t = useTranslations("nav_sidebar");
   const pathname = usePathname();
   const { sidebarOpen, toggleSidebar } = useAppStore();
+
+  const navItems = [
+    { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
+    { href: "/projects", label: t("projects"), icon: FolderOpen },
+    { href: "/settings", label: t("settings"), icon: Settings },
+  ];
 
   return (
     <motion.aside

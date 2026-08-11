@@ -1,6 +1,7 @@
 import { requireAuth } from "@/lib/auth/helpers";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+import { getLocale } from "@/i18n/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -8,12 +9,13 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await requireAuth();
+  const locale = await getLocale();
 
   return (
     <div className="bg-background flex h-screen overflow-hidden">
       <Sidebar user={session.user} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <Header user={session.user} />
+        <Header user={session.user} locale={locale} />
         <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>

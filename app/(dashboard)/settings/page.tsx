@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth/helpers";
 import { UserService } from "@/lib/services/user.service";
 import { PageHeader } from "@/components/shared/page-header";
@@ -19,19 +20,16 @@ export const metadata: Metadata = {
 export default async function SettingsPage() {
   const session = await requireAuth();
   const user = await UserService.getUserWithStats(session.user.id!);
+  const t = await getTranslations("settings");
 
   return (
     <div className="max-w-2xl space-y-8">
-      <PageHeader
-        title="Configuración"
-        description="Administra tu cuenta y preferencias."
-      />
+      <PageHeader title={t("title")} description={t("description")} />
 
-      {/* Perfil */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Perfil</CardTitle>
-          <CardDescription>Tu información de cuenta en Suyay.</CardDescription>
+          <CardTitle className="text-base">{t("profile")}</CardTitle>
+          <CardDescription>{t("profileDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
@@ -46,24 +44,24 @@ export default async function SettingsPage() {
 
           <div className="grid grid-cols-2 gap-4 border-t pt-2">
             <div>
-              <p className="text-muted-foreground mb-1 text-xs">Plan actual</p>
+              <p className="text-muted-foreground mb-1 text-xs">{t("plan")}</p>
               <Badge variant="secondary">{user.plan}</Badge>
             </div>
             <div>
               <p className="text-muted-foreground mb-1 text-xs">
-                Créditos disponibles
+                {t("credits")}
               </p>
               <p className="text-sm font-medium">{user.credits}</p>
             </div>
             <div>
               <p className="text-muted-foreground mb-1 text-xs">
-                Proyectos totales
+                {t("totalProjects")}
               </p>
               <p className="text-sm font-medium">{user._count.projects}</p>
             </div>
             <div>
               <p className="text-muted-foreground mb-1 text-xs">
-                Miembro desde
+                {t("memberSince")}
               </p>
               <p className="text-sm font-medium">
                 {formatDate(user.createdAt)}
@@ -73,33 +71,26 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Plan */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Plan y créditos</CardTitle>
-          <CardDescription>
-            Los créditos se usan para generar videos con IA.
-          </CardDescription>
+          <CardTitle className="text-base">{t("planSection")}</CardTitle>
+          <CardDescription>{t("planDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="bg-muted/30 flex items-center justify-between rounded-lg border p-4">
             <div>
               <p className="font-medium">Plan {user.plan}</p>
               <p className="text-muted-foreground text-sm">
-                {user.credits} créditos disponibles
+                {user.credits} {t("credits").toLowerCase()}
               </p>
             </div>
-            <Badge
-              variant={user.plan === "FREE" ? "secondary" : "default"}
-              className="capitalize"
-            >
-              {user.plan === "FREE" ? "Gratis" : user.plan}
+            <Badge variant={user.plan === "FREE" ? "secondary" : "default"}>
+              {user.plan === "FREE" ? t("free") : user.plan}
             </Badge>
           </div>
           {user.plan === "FREE" && (
             <p className="text-muted-foreground mt-3 text-xs">
-              Actualiza a Pro para obtener más créditos y funciones avanzadas.
-              Disponible en una próxima versión.
+              {t("upgradeDesc")}
             </p>
           )}
         </CardContent>

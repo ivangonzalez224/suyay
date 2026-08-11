@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth/helpers";
 import { UserService } from "@/lib/services/user.service";
 import { PageHeader } from "@/components/shared/page-header";
@@ -12,42 +13,44 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const session = await requireAuth();
   const user = await UserService.getUserWithStats(session.user.id!);
+  const t = await getTranslations("dashboard");
 
   const stats = [
     {
-      title: "Proyectos",
+      title: t("stats.projects"),
       value: user._count.projects,
-      description: "Proyectos creados",
+      description: t("stats.projectsDesc"),
       icon: FolderOpen,
     },
     {
-      title: "Créditos",
+      title: t("stats.credits"),
       value: user.credits,
       description: `Plan ${user.plan}`,
       icon: Zap,
     },
     {
-      title: "Videos",
+      title: t("stats.videos"),
       value: 0,
-      description: "Este mes",
+      description: t("stats.videosDesc"),
       icon: Video,
     },
     {
-      title: "Tiempo ahorrado",
+      title: t("stats.timeSaved"),
       value: "0h",
-      description: "vs edición manual",
+      description: t("stats.timeSavedDesc"),
       icon: Clock,
     },
   ];
 
+  const firstName = user.name?.split(" ")[0] ?? "Usuario";
+
   return (
     <div className="space-y-8">
       <PageHeader
-        title={`Hola, ${user.name?.split(" ")[0] ?? "Usuario"} 👋`}
-        description="Aquí tienes un resumen de tu actividad en Suyay."
+        title={t("greeting", { name: firstName })}
+        description={t("greetingDesc")}
       />
 
-      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(({ title, value, description, icon: Icon }) => (
           <Card key={title}>
@@ -67,19 +70,18 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Empty state proyectos */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Proyectos recientes</CardTitle>
+          <CardTitle className="text-base">{t("recentProjects")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/10">
               <Video className="h-6 w-6 text-violet-500" />
             </div>
-            <p className="text-sm font-medium">No tienes proyectos todavía</p>
+            <p className="text-sm font-medium">{t("noProjects")}</p>
             <p className="text-muted-foreground mt-1 text-xs">
-              En la Fase 2 podrás crear tu primer video con IA
+              {t("noProjectsDesc")}
             </p>
           </div>
         </CardContent>

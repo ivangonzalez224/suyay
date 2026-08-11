@@ -1,60 +1,45 @@
+import { getTranslations } from "next-intl/server";
+import { getLocale } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { ArrowRight, Sparkles, Clock, Edit3 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles, Edit3, Clock } from "lucide-react";
 
-const features = [
-  {
-    icon: Sparkles,
-    title: "Suyay entiende tu contenido",
-    description:
-      "Pega un artículo, transcript o PDF. Suyay genera el guion, escenas y narración automáticamente.",
-  },
-  {
-    icon: Edit3,
-    title: "Control creativo total",
-    description:
-      "Edita cada escena, caption y prompt visual antes de renderizar. El resultado final es tuyo.",
-  },
-  {
-    icon: Clock,
-    title: "De texto a video en minutos",
-    description:
-      "Lo que tomaría horas de edición manual, Suyay lo hace en segundos con calidad profesional.",
-  },
-];
+export default async function HomePage() {
+  const t = await getTranslations();
+  const locale = await getLocale();
 
-export default function HomePage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
       {/* Nav */}
       <nav className="border-b border-zinc-800/60 px-6 py-4">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/logo-white.png"
-              alt="Suyay"
-              width={120}
-              height={34}
-              className="object-contain"
-              priority
-            />
-          </div>
+          <Image
+            src="/logo-white.png"
+            alt="Suyay"
+            width={120}
+            height={34}
+            style={{ width: "auto" }}
+            className="object-contain"
+            priority
+          />
           <div className="flex items-center gap-3">
+            <LocaleSwitcher currentLocale={locale} variant="dark" />
             <Button
               variant="ghost"
               asChild
               size="sm"
               className="text-zinc-400 hover:text-white"
             >
-              <Link href="/login">Iniciar sesión</Link>
+              <Link href="/login">{t("nav.signIn")}</Link>
             </Button>
             <Button
               asChild
               size="sm"
               className="bg-violet-600 text-white hover:bg-violet-500"
             >
-              <Link href="/register">Empezar gratis</Link>
+              <Link href="/register">{t("nav.getStarted")}</Link>
             </Button>
           </div>
         </div>
@@ -62,16 +47,14 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="mx-auto max-w-5xl px-6 pt-24 pb-20 text-center">
-        {/* Headline */}
         <h1 className="mb-6 text-5xl leading-[1.08] font-bold tracking-tight sm:text-6xl">
-          De texto a video
+          {t("landing.headline")}
           <br />
-          <span className="text-violet-400">listo para publicar</span>
+          <span className="text-violet-400">{t("landing.headlineAccent")}</span>
         </h1>
 
         <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-zinc-400">
-          Convierte artículos, PDFs y transcripts en videos editables para
-          TikTok, Reels y Shorts — con voz, escenas y captions.
+          {t("landing.description")}
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -81,7 +64,7 @@ export default function HomePage() {
             className="h-12 gap-2 bg-violet-600 px-8 text-white hover:bg-violet-500"
           >
             <Link href="/register">
-              Crear cuenta gratis
+              {t("landing.cta")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -91,14 +74,11 @@ export default function HomePage() {
             size="lg"
             className="h-12 border-zinc-700 px-8 text-zinc-300 hover:bg-zinc-800 hover:text-white"
           >
-            <Link href="/login">Ver demo</Link>
+            <Link href="/login">{t("landing.demo")}</Link>
           </Button>
         </div>
 
-        {/* Social proof */}
-        <p className="mt-8 text-sm text-zinc-600">
-          Sin tarjeta de crédito · 10 créditos gratis al registrarte
-        </p>
+        <p className="mt-8 text-sm text-zinc-600">{t("landing.socialProof")}</p>
       </section>
 
       {/* Divider */}
@@ -109,33 +89,42 @@ export default function HomePage() {
       {/* Features */}
       <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="grid gap-8 md:grid-cols-3">
-          {features.map(({ icon: Icon, title, description }) => (
+          {[
+            {
+              icon: Sparkles,
+              title: t("landing.features.f1Title"),
+              desc: t("landing.features.f1Desc"),
+            },
+            {
+              icon: Edit3,
+              title: t("landing.features.f2Title"),
+              desc: t("landing.features.f2Desc"),
+            },
+            {
+              icon: Clock,
+              title: t("landing.features.f3Title"),
+              desc: t("landing.features.f3Desc"),
+            },
+          ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="space-y-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-violet-500/20 bg-violet-500/10">
                 <Icon className="h-4 w-4 text-violet-400" />
               </div>
               <h3 className="text-sm font-semibold text-white">{title}</h3>
-              <p className="text-sm leading-relaxed text-zinc-500">
-                {description}
-              </p>
+              <p className="text-sm leading-relaxed text-zinc-500">{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Flow visual */}
+      {/* Flow */}
       <section className="mx-auto max-w-5xl px-6 pb-20">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8">
           <p className="mb-6 text-center text-xs font-medium tracking-widest text-zinc-500 uppercase">
-            Cómo funciona
+            {t("landing.howItWorks")}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {[
-              { step: "01", label: "Pega tu contenido" },
-              { step: "02", label: "IA genera storyboard" },
-              { step: "03", label: "Edita las escenas" },
-              { step: "04", label: "Renderiza y descarga" },
-            ].map(({ step, label }, i, arr) => (
+            {(["01", "02", "03", "04"] as const).map((step, i, arr) => (
               <div key={step} className="flex items-center gap-3">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full border border-violet-500/30 bg-violet-500/10">
@@ -144,7 +133,7 @@ export default function HomePage() {
                     </span>
                   </div>
                   <span className="text-sm font-medium text-zinc-300">
-                    {label}
+                    {t(`landing.steps.${step}`)}
                   </span>
                 </div>
                 {i < arr.length - 1 && (
@@ -159,17 +148,16 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-zinc-800/60 px-6 py-6">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/logo-white.png"
-              alt="Suyay"
-              width={80}
-              height={22}
-              className="object-contain"
-            />
-          </div>
+          <Image
+            src="/logo-white.png"
+            alt="Suyay"
+            width={80}
+            height={22}
+            style={{ width: "auto" }}
+            className="object-contain"
+          />
           <p className="text-xs text-zinc-600">
-            © {new Date().getFullYear()} Suyay. Todos los derechos reservados.
+            © {new Date().getFullYear()} Suyay. {t("landing.footer")}
           </p>
         </div>
       </footer>

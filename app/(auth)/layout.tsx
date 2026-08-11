@@ -1,19 +1,22 @@
+import { getTranslations } from "next-intl/server";
+import { getLocale } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import Image from "next/image";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("auth");
+  const locale = await getLocale();
+
   return (
     <div className="flex min-h-screen bg-zinc-950">
-      {/* Panel izquierdo — branding */}
+      {/* Panel izquierdo */}
       <div className="relative hidden w-[480px] shrink-0 flex-col overflow-hidden border-r border-zinc-800/60 p-10 lg:flex">
-        {/* Fondo decorativo */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(124,58,237,0.12)_0%,transparent_60%)]" />
         <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full bg-violet-500/5 blur-3xl" />
-
-        {/* Grid decorativo */}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -23,40 +26,37 @@ export default function AuthLayout({
           }}
         />
 
-        {/* Logo */}
         <div className="relative z-10">
           <Image
             src="/logo-white.png"
             alt="Suyay"
-            width={180}
-            height={51}
+            width={160}
+            height={45}
+            style={{ width: "auto" }}
             className="object-contain"
             priority
           />
         </div>
 
-        {/* Quote */}
         <div className="relative z-10 mt-auto space-y-6">
           <div className="space-y-4">
             <p className="text-2xl leading-snug font-bold tracking-tight text-white">
-              Videos generados con IA,
+              {t("brandingQuote")}
               <br />
-              <span className="text-violet-400">totalmente editables</span>
+              <span className="text-violet-400">{t("brandingQuote2")}</span>
               <br />
-              antes del render final.
+              {t("brandingQuote3")}
             </p>
             <p className="text-sm leading-relaxed text-zinc-500">
-              Control creativo completo sobre cada escena, caption y prompt
-              visual. Tú decides el resultado final.
+              {t("brandingDesc")}
             </p>
           </div>
 
-          {/* Stats */}
           <div className="flex items-center gap-6 border-t border-zinc-800/60 pt-2">
             {[
-              { value: "5min", label: "De texto a video" },
-              { value: "9:16", label: "Formato nativo" },
-              { value: "3", label: "Plataformas" },
+              { value: t("stat1Value"), label: t("stat1Label") },
+              { value: t("stat2Value"), label: t("stat2Label") },
+              { value: t("stat3Value"), label: t("stat3Label") },
             ].map(({ value, label }) => (
               <div key={label}>
                 <p className="text-lg font-bold text-white">{value}</p>
@@ -67,22 +67,26 @@ export default function AuthLayout({
         </div>
       </div>
 
-      {/* Panel derecho — formulario */}
-      <div className="flex flex-1 items-center justify-center p-8">
-        <div className="w-full max-w-sm">
-          {/* Logo mobile */}
-          <div className="mb-8 lg:hidden">
-            <Image
-              src="/logo-white.png"
-              alt="Suyay"
-              width={140}
-              height={39}
-              className="object-contain"
-              priority
-            />
+      {/* Panel derecho */}
+      <div className="flex flex-1 flex-col">
+        <div className="flex justify-end p-4">
+          <LocaleSwitcher currentLocale={locale} variant="dark" />
+        </div>
+        <div className="flex flex-1 items-center justify-center p-8">
+          <div className="w-full max-w-sm">
+            <div className="mb-8 lg:hidden">
+              <Image
+                src="/logo-white.png"
+                alt="Suyay"
+                width={140}
+                height={39}
+                style={{ width: "auto" }}
+                className="object-contain"
+                priority
+              />
+            </div>
+            {children}
           </div>
-
-          {children}
         </div>
       </div>
     </div>
