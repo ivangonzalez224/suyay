@@ -61,7 +61,21 @@
     "stat2Value": "9:16",
     "stat2Label": "Native format",
     "stat3Value": "3",
-    "stat3Label": "Platforms"
+    "stat3Label": "Platforms",
+    "forgotTitle": "Forgot your password?",
+    "forgotSubtitle": "Enter your email and we'll send you a reset link.",
+    "sendResetLink": "Send reset link",
+    "sending": "Sending...",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email",
+    "checkEmailDesc": "We sent a link to {email}. It expires in 1 hour.",
+    "newPasswordTitle": "New password",
+    "newPasswordSubtitle": "Enter your new password.",
+    "newPassword": "New password",
+    "updatePassword": "Update password",
+    "saving": "Saving...",
+    "passwordUpdated": "Password updated",
+    "passwordUpdatedDesc": "Your password was updated. Redirecting to login..."
   },
   "dashboard": {
     "greeting": "Hello, {name} 👋",

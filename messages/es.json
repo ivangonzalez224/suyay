@@ -61,7 +61,21 @@
     "stat2Value": "9:16",
     "stat2Label": "Formato nativo",
     "stat3Value": "3",
-    "stat3Label": "Plataformas"
+    "stat3Label": "Plataformas",
+    "forgotTitle": "¿Olvidaste tu contraseña?",
+    "forgotSubtitle": "Ingresa tu email y te enviaremos un enlace para restablecerla.",
+    "sendResetLink": "Enviar enlace",
+    "sending": "Enviando...",
+    "backToLogin": "Volver al login",
+    "checkEmail": "Revisa tu email",
+    "checkEmailDesc": "Enviamos un enlace a {email}. Expira en 1 hora.",
+    "newPasswordTitle": "Nueva contraseña",
+    "newPasswordSubtitle": "Ingresa tu nueva contraseña.",
+    "newPassword": "Nueva contraseña",
+    "updatePassword": "Actualizar contraseña",
+    "saving": "Guardando...",
+    "passwordUpdated": "Contraseña actualizada",
+    "passwordUpdatedDesc": "Tu contraseña fue actualizada. Redirigiendo al login..."
   },
   "dashboard": {
     "greeting": "Hola, {name} 👋",
